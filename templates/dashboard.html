@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Hello {{ name }}, here's your diet for {{ day }}</h2>
+<div class="card">
+    {% for meal, item in diet.items() %}
+        <p><strong>{{ meal }}:</strong> {{ item }}</p>
+    {% endfor %}
+</div>
+<a href="/">Plan Again</a>
+{% endblock %}

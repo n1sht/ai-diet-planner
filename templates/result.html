@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Diet Plan</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px;
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            text-align: left;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            background: #f2f2f2;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        a {
+            margin-top: 20px;
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🥗 Your Diet Plan for {{ day }}</h1>
+        <p><strong>Age:</strong> {{ age }} years</p>
+        <p><strong>Weight:</strong> {{ weight }} kg</p>
+        <ul>
+            {% for item in diet %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        <a href="/">← Back to Planner</a>
+    </div>
+</body>
+</html>

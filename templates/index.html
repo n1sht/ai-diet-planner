@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Diet Planner - Powered by Gemini</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-bottom: 30px;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+
+        .profile-status {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .profile-status h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .profile-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .profile-stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .radio-item input[type="radio"] {
+            width: auto;
+            margin: 0 8px 0 0;
+        }
+
+        .radio-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-item.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-prompt {
+            background: #e6f3ff;
+            border: 2px dashed #3182ce;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-prompt h3 {
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+
+        .profile-prompt p {
+            color: #2c5282;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .btn-profile {
+            background: #3182ce;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-profile:hover {
+            background: #2c5282;
+            transform: translateY(-2px);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            background: #e53e3e;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .feature-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .divider {
+            margin: 30px 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            position: relative;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quick-form-info {
+            background: #fef3c7;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #92400e;
+        }
+
+        .cuisine-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .cuisine-item {
+            background: white;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .cuisine-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .cuisine-item input[type="checkbox"] {
+            display: none;
+        }
+
+        .cuisine-item.selected {
+            background: #f0f4ff;
+            border-color: #667eea;
+            font-weight: 600;
+        }
+
+        .cuisine-item.selected::before {
+            content: '✓ ';
+            color: #667eea;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 AI Diet Planner</h1>
+        <p class="subtitle">Personalized nutrition powered by artificial intelligence</p>
+        
+        <div class="ai-badge">
+            <i class="fas fa-robot"></i>
+            <span>Powered by Google Gemini AI</span>
+        </div>
+
+        <!-- Show profile status if user has a profile -->
+        {% if has_profile %}
+        <div class="profile-status">
+            <h3>✅ Profile Active</h3>
+            <p style="margin: 5px 0;">Welcome back! Your personalized settings are loaded.</p>
+            <div class="profile-info">
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ profile.age }} yrs</div>
+                    <div class="profile-stat-label">Age</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ profile.daily_calories }}</div>
+                    <div class="profile-stat-label">Daily Cal</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="profile-stat-value">{{ profile.dietary_type|title }}</div>
+                    <div class="profile-stat-label">Diet Type</div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <a href="/profile" class="btn-profile">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+                <a href="/clear_profile" class="btn-secondary" onclick="return confirm('Are you sure you want to clear your profile?')">
+                    <i class="fas fa-trash"></i> Clear
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <!-- Show features if no profile -->
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-text">Personalized Plans</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-text">AI-Generated</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🥗</div>
+                <div class="feature-text">Healthy Recipes</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">Macro Tracking</div>
+            </div>
+        </div>
+
+        <!-- Profile Prompt -->
+        <div class="profile-prompt">
+            <h3>🌟 Get Your Personalized AI Meal Plan!</h3>
+            <p>Create a detailed profile for customized recommendations based on your health goals, dietary preferences, and lifestyle.</p>
+            <a href="/profile" class="btn-profile">
+                <i class="fas fa-user-plus"></i> Create My Profile
+            </a>
+        </div>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+        {% endif %}
+
+        <!-- Flashed messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quick Form or Generate with Profile -->
+        <form action="/generate" method="post" id="quickForm">
+            {% if not has_profile %}
+            <div class="quick-form-info">
+                <i class="fas fa-info-circle"></i> Quick plan with basic info (create profile for better results)
+            </div>
+            
+            <div class="form-section">
+                <label for="age">Age</label>
+                <input type="number" name="age" id="age" required min="10" max="100" placeholder="Enter your age">
+
+                <label for="weight">Weight (kg)</label>
+                <input type="number" name="weight" id="weight" required step="0.1" min="20" max="300" placeholder="Enter your weight">
+
+                <label>Dietary Preference</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" name="quick_dietary_type" id="veg" value="vegetarian" required>
+                        <label for="veg">🥬 Vegetarian</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="quick_dietary_type" id="nonveg" value="omnivore" required>
+                        <label for="nonveg">🍖 Non-Vegetarian</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="quick_dietary_type" id="vegan" value="vegan" required>
+                        <label for="vegan">🌱 Vegan</label>
+                    </div>
+                </div>
+
+                <label>Preferred Cuisine Styles (Select multiple)</label>
+                <div class="cuisine-grid">
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="north_indian">
+                        North Indian
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="south_indian">
+                        South Indian
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="chinese">
+                        Chinese
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="continental">
+                        Continental
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="mediterranean">
+                        Mediterranean
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="italian">
+                        Italian
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="mexican">
+                        Mexican
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="thai">
+                        Thai
+                    </label>
+                    <label class="cuisine-item">
+                        <input type="checkbox" name="quick_cuisine" value="japanese">
+                        Japanese
+                    </label>
+                </div>
+
+                <label for="day">Select Day</label>
+                <select name="day" id="day" required>
+                    <option value="">-- Choose a Day --</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            {% else %}
+            <div class="form-section">
+                <p style="color: #666; margin-bottom: 15px;">
+                    <i class="fas fa-check-circle" style="color: #48bb78;"></i> 
+                    Using your saved profile for personalized recommendations
+                </p>
+                <label for="day">Select Day</label>
+                <select name="day" id="day" required>
+                    <option value="">-- Choose a Day --</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <button type="submit">
+                <i class="fas fa-magic"></i> Generate AI Plan
+            </button>
+        </form>
+        
+        <footer>
+            Made with 💪 and 🥗 | Powered by AI
+        </footer>
+    </div>
+
+    <script>
+        // Handle radio button selection styling
+        document.querySelectorAll('.radio-item input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove selected class from all radio items in the group
+                document.querySelectorAll('.radio-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                // Add selected class to parent of checked radio
+                if (this.checked) {
+                    this.closest('.radio-item').classList.add('selected');
+                }
+            });
+        });
+
+        // Handle cuisine checkbox selection styling
+        document.querySelectorAll('.cuisine-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.closest('.cuisine-item').classList.add('selected');
+                } else {
+                    this.closest('.cuisine-item').classList.remove('selected');
+                }
+            });
+        });
+
+        // Initialize selected state on page load
+        document.querySelectorAll('.radio-item input[type="radio"]:checked').forEach(radio => {
+            radio.closest('.radio-item').classList.add('selected');
+        });
+
+        document.querySelectorAll('.cuisine-item input[type="checkbox"]:checked').forEach(checkbox => {
+            checkbox.closest('.cuisine-item').classList.add('selected');
+        });
+    </script>
+</body>
+</html>

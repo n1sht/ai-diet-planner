@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Your Profile - AI Diet Planner</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            margin-right: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: transform 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-box {
+            background: #e6f3ff;
+            border-left: 4px solid #3182ce;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #2c5282;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Create Your Personalized Profile</h1>
+        <p class="subtitle">Tell us about yourself for AI-powered meal recommendations</p>
+
+        <div class="info-box">
+            <p>📊 Your information helps our AI create meals perfectly suited to your needs, preferences, and health goals.</p>
+        </div>
+
+        <form action="/save_profile" method="post">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3 class="section-title">Basic Information</h3>
+                <div class="form-grid">
+                    <div>
+                        <label for="age">Age</label>
+                        <input type="number" name="age" id="age" required min="10" max="100">
+                    </div>
+                    <div>
+                        <label for="gender">Gender</label>
+                        <select name="gender" id="gender" required>
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" name="weight" id="weight" required step="0.1" min="20" max="300">
+                    </div>
+                    <div>
+                        <label for="height">Height (cm)</label>
+                        <input type="number" name="height" id="height" required min="100" max="250">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Goals -->
+            <div class="form-section">
+                <h3 class="section-title">Health Goals</h3>
+                <div class="form-grid">
+                    <div>
+                        <label for="goal">Primary Goal</label>
+                        <select name="goal" id="goal" required>
+                            <option value="maintain">Maintain Weight</option>
+                            <option value="lose_weight">Lose Weight</option>
+                            <option value="gain_weight">Gain Weight</option>
+                            <option value="muscle_gain">Build Muscle</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="activity_level">Activity Level</label>
+                        <select name="activity_level" id="activity_level" required>
+                            <option value="sedentary">Sedentary (Little/no exercise)</option>
+                            <option value="light">Light (Exercise 1-3 days/week)</option>
+                            <option value="moderate">Moderate (Exercise 3-5 days/week)</option>
+                            <option value="active">Active (Exercise 6-7 days/week)</option>
+                            <option value="very_active">Very Active (Physical job + exercise)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dietary Preferences -->
+            <div class="form-section">
+                <h3 class="section-title">Dietary Preferences</h3>
+                <div class="form-grid">
+                    <div>
+                        <label for="dietary_type">Diet Type</label>
+                        <select name="dietary_type" id="dietary_type" required>
+                            <option value="omnivore">Omnivore (Everything)</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="pescatarian">Pescatarian</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="spice_tolerance">Spice Preference</label>
+                        <select name="spice_tolerance" id="spice_tolerance">
+                            <option value="mild">Mild</option>
+                            <option value="medium">Medium</option>
+                            <option value="spicy">Spicy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label>Allergies (Check all that apply)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="nuts" id="allergy_nuts">
+                            <label for="allergy_nuts">Nuts</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="dairy" id="allergy_dairy">
+                            <label for="allergy_dairy">Dairy</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="eggs" id="allergy_eggs">
+                            <label for="allergy_eggs">Eggs</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="gluten" id="allergy_gluten">
+                            <label for="allergy_gluten">Gluten</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="seafood" id="allergy_seafood">
+                            <label for="allergy_seafood">Seafood</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="allergies" value="soy" id="allergy_soy">
+                            <label for="allergy_soy">Soy</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Conditions -->
+            <div class="form-section">
+                <h3 class="section-title">Medical Conditions (Optional)</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="medical_conditions" value="diabetes" id="med_diabetes">
+                        <label for="med_diabetes">Diabetes</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="medical_conditions" value="hypertension" id="med_hypertension">
+                        <label for="med_hypertension">Hypertension</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="medical_conditions" value="cholesterol" id="med_cholesterol">
+                        <label for="med_cholesterol">High Cholesterol</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="medical_conditions" value="thyroid" id="med_thyroid">
+                        <label for="med_thyroid">Thyroid Issues</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle -->
+            <div class="form-section">
+                <h3 class="section-title">Lifestyle & Preferences</h3>
+                <div class="form-grid">
+                    <div>
+                        <label for="meal_prep_time">Available Cooking Time</label>
+                        <select name="meal_prep_time" id="meal_prep_time">
+                            <option value="quick">Quick (< 20 mins)</option>
+                            <option value="medium">Medium (20-40 mins)</option>
+                            <option value="elaborate">Elaborate (40+ mins)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cooking_skill">Cooking Skill Level</label>
+                        <select name="cooking_skill" id="cooking_skill">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label>Preferred Cuisines (Check all that apply)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="indian" id="cuisine_indian">
+                            <label for="cuisine_indian">Indian</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="chinese" id="cuisine_chinese">
+                            <label for="cuisine_chinese">Chinese</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="italian" id="cuisine_italian">
+                            <label for="cuisine_italian">Italian</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="mexican" id="cuisine_mexican">
+                            <label for="cuisine_mexican">Mexican</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="mediterranean" id="cuisine_mediterranean">
+                            <label for="cuisine_mediterranean">Mediterranean</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="cuisine_preferences" value="thai" id="cuisine_thai">
+                            <label for="cuisine_thai">Thai</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">🚀 Create My AI Meal Plan</button>
+        </form>
+    </div>
+</body>
+</html>
