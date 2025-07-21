@@ -18,7 +18,7 @@ class AIMealGenerator:
         if api_key:
             genai.configure(api_key=api_key)
             # Use the correct model name
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
+            self.model = genai.GenerativeModel('gemini-2.0-flash')
             self.initialized = True
             print(f"AI Generator initialized with API key: {api_key[:10]}...")
         else:
@@ -47,36 +47,28 @@ class AIMealGenerator:
                 )
             )
             
-            # Extract text from response
+            # Extract text from response - UPDATED HANDLING
             response_text = ""
             
-            # Check if response has text
-            if hasattr(response, 'text'):
-                response_text = response.text
-                print(f"Got response text directly: {len(response_text)} characters")
-            
-            # If no text, try to extract from candidates
-            if not response_text and hasattr(response, 'candidates'):
-                print(f"Checking candidates... found {len(response.candidates)}")
-                for candidate in response.candidates:
-                    if hasattr(candidate, 'content'):
-                        if hasattr(candidate.content, 'parts'):
+            # Try to get text from parts as suggested by the error
+            try:
+                if hasattr(response, 'candidates') and response.candidates:
+                    for candidate in response.candidates:
+                        if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
                             for part in candidate.content.parts:
                                 if hasattr(part, 'text'):
                                     response_text += part.text
-                                    print(f"Extracted {len(part.text)} characters from part")
-            
-            # If still no text, check for safety ratings or other issues
-            if not response_text:
-                print("No text found in response. Checking for safety issues...")
-                if hasattr(response, 'prompt_feedback'):
-                    print(f"Prompt feedback: {response.prompt_feedback}")
-                if hasattr(response, 'candidates') and response.candidates:
-                    for i, candidate in enumerate(response.candidates):
-                        if hasattr(candidate, 'finish_reason'):
-                            print(f"Candidate {i} finish reason: {candidate.finish_reason}")
-                        if hasattr(candidate, 'safety_ratings'):
-                            print(f"Candidate {i} safety ratings: {candidate.safety_ratings}")
+                
+                # If no text extracted, try the simple accessor as fallback
+                if not response_text and hasattr(response, 'text'):
+                    try:
+                        response_text = response.text
+                    except ValueError:
+                        # This will catch the "not simple text" error
+                        pass
+                        
+            except Exception as e:
+                print(f"Error extracting text from Gemini response: {e}")
             
             if not response_text:
                 print("No text extracted from Gemini response - using fallback")
@@ -231,3 +223,118 @@ Focus on authentic {cuisine_str} dishes."""
                 return False
         
         return True
+    
+    def _fallback_meal_plan(self, user_profile, day):
+        """Fallback meal plan when AI generation fails"""
+        dietary_type = user_profile.get('dietary_type', 'omnivore')
+        cuisine_prefs = user_profile.get('cuisine_preferences', ['indian'])
+        calories = user_profile.get('daily_calories', 2000)
+        
+        # Create a structured meal plan that matches AI format
+        meal_plan = {
+            "meals": [],
+            "total_nutrition": {
+                "calories": calories,
+                "protein": user_profile.get('daily_macros', {}).get('protein_g', 85),
+                "carbs": user_profile.get('daily_macros', {}).get('carbs_g', 200),
+                "fats": user_profile.get('daily_macros', {}).get('fats_g', 60)
+            },
+            "meal_plan_notes": f"Balanced {dietary_type} meal plan for {day}"
+        }
+        
+        # Generate meals based on dietary type
+        if dietary_type == 'vegetarian' or dietary_type == 'vegan':
+            meal_plan["meals"] = [
+                {
+                    "type": "breakfast",
+                    "name": "Oatmeal with Fruits and Nuts",
+                    "description": "Healthy start with complex carbs and proteins",
+                    "ingredients": ["Rolled oats", "Banana", "Almonds", "Honey", "Milk/Plant milk"],
+                    "calories": int(calories * 0.25),
+                    "prep_time": "15 minutes",
+                    "macros": {"protein": 15, "carbs": 45, "fats": 10},
+                    "notes": "Add seasonal fruits for variety"
+                },
+                {
+                    "type": "snack",
+                    "name": "Mixed Nuts and Fruit",
+                    "description": "Energy boosting healthy snack",
+                    "ingredients": ["Almonds", "Walnuts", "Dried dates", "Apple"],
+                    "calories": int(calories * 0.15),
+                    "prep_time": "2 minutes",
+                    "macros": {"protein": 8, "carbs": 20, "fats": 8},
+                    "notes": "Great for mid-morning energy"
+                },
+                {
+                    "type": "lunch",
+                    "name": "Dal Rice with Vegetables",
+                    "description": "Traditional wholesome Indian meal",
+                    "ingredients": ["Toor dal", "Rice", "Mixed vegetables", "Spices", "Ghee"],
+                    "calories": int(calories * 0.35),
+                    "prep_time": "30 minutes",
+                    "macros": {"protein": 25, "carbs": 60, "fats": 15},
+                    "notes": "Complete protein from dal and rice combination"
+                },
+                {
+                    "type": "dinner",
+                    "name": "Vegetable Curry with Roti",
+                    "description": "Light and nutritious dinner",
+                    "ingredients": ["Mixed vegetables", "Whole wheat flour", "Spices", "Oil", "Yogurt"],
+                    "calories": int(calories * 0.25),
+                    "prep_time": "25 minutes",
+                    "macros": {"protein": 12, "carbs": 35, "fats": 10},
+                    "notes": "Easy to digest evening meal"
+                }
+            ]
+        else:  # omnivore
+            meal_plan["meals"] = [
+                {
+                    "type": "breakfast",
+                    "name": "Scrambled Eggs with Toast",
+                    "description": "Protein-rich morning meal",
+                    "ingredients": ["Eggs", "Whole wheat bread", "Butter", "Milk", "Salt", "Pepper"],
+                    "calories": int(calories * 0.25),
+                    "prep_time": "10 minutes",
+                    "macros": {"protein": 20, "carbs": 30, "fats": 15},
+                    "notes": "High protein start to the day"
+                },
+                {
+                    "type": "snack",
+                    "name": "Greek Yogurt with Berries",
+                    "description": "Probiotic-rich healthy snack",
+                    "ingredients": ["Greek yogurt", "Mixed berries", "Honey", "Granola"],
+                    "calories": int(calories * 0.15),
+                    "prep_time": "5 minutes",
+                    "macros": {"protein": 10, "carbs": 20, "fats": 5},
+                    "notes": "Good for digestive health"
+                },
+                {
+                    "type": "lunch",
+                    "name": "Grilled Chicken Salad",
+                    "description": "Light yet filling lunch",
+                    "ingredients": ["Chicken breast", "Mixed greens", "Vegetables", "Olive oil", "Lemon"],
+                    "calories": int(calories * 0.35),
+                    "prep_time": "20 minutes",
+                    "macros": {"protein": 35, "carbs": 25, "fats": 20},
+                    "notes": "Lean protein with fresh vegetables"
+                },
+                {
+                    "type": "dinner",
+                    "name": "Fish Curry with Brown Rice",
+                    "description": "Omega-3 rich dinner",
+                    "ingredients": ["Fish", "Brown rice", "Coconut milk", "Spices", "Vegetables"],
+                    "calories": int(calories * 0.25),
+                    "prep_time": "30 minutes",
+                    "macros": {"protein": 25, "carbs": 40, "fats": 15},
+                    "notes": "Heart-healthy dinner option"
+                }
+            ]
+        
+        # Adjust for vegan if needed
+        if dietary_type == 'vegan':
+            meal_plan["meals"][0]["ingredients"] = ["Rolled oats", "Banana", "Almonds", "Maple syrup", "Almond milk"]
+            meal_plan["meals"][0]["notes"] = "Use plant-based milk for vegan option"
+            meal_plan["meals"][3]["ingredients"] = ["Mixed vegetables", "Whole wheat flour", "Spices", "Oil", "Cashew cream"]
+            meal_plan["meals"][3]["notes"] = "Cashew cream adds richness without dairy"
+        
+        return meal_plan

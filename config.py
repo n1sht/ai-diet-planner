@@ -4,11 +4,11 @@ import os
 
 class Config:
     # MongoDB Configuration
-    MONGO_URI = os.environ.get("MONGO_URI") or "mongodb+srv://yashitiwary:9838yashi@cluster0.r5x2deh.mongodb.net/diet_planner?retryWrites=true&w=majority"
+    MONGO_URI = os.environ.get("MONGO_URI")
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-this")
     
     # Google Gemini Configuration (FREE!)
-    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyAu4Oddsfl1HNGmHR6ya5BzJ1fPSAkK240")
+    GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
     GEMINI_MODEL = "gemini-2.0-flash"
     
     # AI Configuration
